@@ -531,6 +531,74 @@ body {
 }
 
 /* ============================================
+   🤖 AI FEATURES - Suggestions & Tips
+   ============================================ */
+
+/**
+ * AI Password Suggestion Styles
+ * - Shows intelligent suggestions as user types
+ * - Color-coded feedback for password strength
+ */
+.ai-suggestion {
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-sm);
+    background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 100%);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--radius-md);
+    color: var(--primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: fadeInSlideLeft 0.3s ease-out;
+}
+
+/**
+ * Security Tips Styles
+ * - Displays contextual security recommendations
+ * - Appears as helpful guidance
+ */
+.security-tip {
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-sm);
+    background: linear-gradient(135deg, #FFF8E1 0%, #F1F8E9 100%);
+    border-left: 3px solid var(--warning);
+    border-radius: var(--radius-md);
+    color: #C78A00;
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: fadeInSlideLeft 0.3s ease-out;
+}
+
+/**
+ * Password Strength Indicator
+ * - Visual feedback for password quality
+ * - Data attributes drive styling
+ */
+.password-input[data-strength="weak"] {
+    border-color: var(--error);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+.password-input[data-strength="fair"] {
+    border-color: var(--warning);
+    background-color: rgba(245, 158, 11, 0.05);
+}
+
+.password-input[data-strength="good"] {
+    border-color: #3B82F6;
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.password-input[data-strength="strong"] {
+    border-color: var(--success);
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+.password-input[data-strength="very strong"] {
+    border-color: #059669;
+    background-color: rgba(5, 150, 105, 0.05);
+}
+
+/* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 
