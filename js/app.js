@@ -1,14 +1,29 @@
 /**
  * AppGate - Professional Authentication System
  * Main Application Logic
+ * 
+ * Features:
+ * - Login & Sign Up Forms
+ * - Real-time Form Validation
+ * - Password Management (Show/Hide, Requirements)
+ * - User Feedback & Loading States
+ * - Responsive Design
+ * - Smooth Animations & Transitions
  */
 
 // ============================================
 // APPLICATION STATE
 // ============================================
 
+/**
+ * Global application state
+ * @type {Object}
+ * @property {string} currentMode - Current authentication mode ('login' or 'signup')
+ * @property {Object} validationErrors - Object storing current validation errors
+ * @property {boolean} isSubmitting - Flag indicating if form submission is in progress
+ */
 const AppState = {
-    currentMode: 'login', // 'login' or 'signup'
+    currentMode: 'login',
     validationErrors: {},
     isSubmitting: false
 };
@@ -17,8 +32,14 @@ const AppState = {
 // INITIALIZATION
 // ============================================
 
+/**
+ * Initialize application when DOM is ready
+ * - Render initial authentication form
+ * - Attach event listeners
+ * - Setup validation monitoring
+ */
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('AppGate Authentication System initialized');
+    console.log('🚀 AppGate Authentication System initialized');
     renderAuthForm();
 });
 
@@ -27,7 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 
 /**
- * Render the appropriate form based on current mode (login/signup)
+ * Render the appropriate form based on current mode
+ * - Applies smooth exit animation before content change
+ * - Renders either login or signup form
+ * - Attaches all necessary event listeners
  */
 function renderAuthForm() {
     const formContent = document.getElementById('formContent');
@@ -50,8 +74,13 @@ function renderAuthForm() {
     }, 300);
 }
 
+// ============================================
+// LOGIN FORM HTML
+// ============================================
+
 /**
  * Get HTML for Login form
+ * @returns {string} HTML string for login form
  */
 function getLoginFormHTML() {
     return `
@@ -113,6 +142,7 @@ function getLoginFormHTML() {
 
 /**
  * Get HTML for Sign Up form
+ * @returns {string} HTML string for signup form with password requirements indicator
  */
 function getSignUpFormHTML() {
     return `
@@ -203,11 +233,15 @@ function getSignUpFormHTML() {
 }
 
 // ============================================
-// EVENT LISTENERS
+// EVENT LISTENERS & INTERACTIONS
 // ============================================
 
 /**
  * Attach event listeners to form elements
+ * - Form submission handler
+ * - Password toggle buttons
+ * - Real-time validation
+ * - Form state monitoring
  */
 function attachEventListeners() {
     const form = document.getElementById('authForm');
@@ -215,6 +249,40 @@ function attachEventListeners() {
     
     // Password toggle listeners
     attachPasswordToggleListeners();
+    
+    // Monitor form changes to enable/disable submit
+    monitorFormChanges();
+}
+
+/**
+ * Monitor form for changes and update button state
+ */
+function monitorFormChanges() {
+    const inputs = document.querySelectorAll('.form-input');
+    const submitBtn = document.querySelector('.btn-primary');
+    
+    if (!submitBtn) return;
+    
+    const updateButtonState = () => {
+        // Check if all required fields have values
+        let hasValues = true;
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                hasValues = false;
+            }
+        });
+        
+        // Enable button only if all fields have content
+        submitBtn.disabled = !hasValues;
+    };
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', updateButtonState);
+        input.addEventListener('change', updateButtonState);
+    });
+    
+    // Initial state
+    updateButtonState();
 }
 
 /**
@@ -337,8 +405,70 @@ function clearFieldError(fieldId) {
     }
 }
 
+// ============================================
+// UI FEEDBACK & USER EXPERIENCE
+// ============================================
+
+/**
+ * Show success message to user
+ * - Display message with icon and text
+ * - Auto-dismiss after 3 seconds
+ * @param {string} message - Success message to display
+ */
+function showSuccessMessage(message) {
+    const successMsg = document.getElementById('successMessage');
+    const successText = document.getElementById('successText');
+    
+    if (successMsg && successText) {
+        successText.textContent = message;
+        successMsg.style.display = 'flex';
+        
+        // Auto-dismiss after 3 seconds
+        setTimeout(hideSuccessMessage, 3000);
+    }
+}
+
+/**
+ * Hide success message
+ * @returns {void}
+ */
+function hideSuccessMessage() {
+    const successMsg = document.getElementById('successMessage');
+    if (successMsg) {
+        successMsg.style.display = 'none';
+    }
+}
+
+/**
+ * Set button loading state with spinner
+ * - Add/remove loading class and disabled state
+ * - Update accessibility attributes
+ * @param {HTMLElement} button - Button element to update
+ * @param {boolean} isLoading - True to show loading state
+ */
+function setButtonLoading(button, isLoading) {
+    if (!button) return;
+    
+    if (isLoading) {
+        button.classList.add('loading');
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+    } else {
+        button.classList.remove('loading');
+        button.disabled = false;
+        button.setAttribute('aria-busy', 'false');
+    }
+}
+
+// ============================================
+// PASSWORD MANAGEMENT
+// ============================================
+
 /**
  * Toggle password visibility
+ * - Switch input type between 'password' and 'text'
+ * - Update eye icon visibility
+ * @param {HTMLElement} button - Password toggle button element
  */
 function togglePasswordVisibility(button) {
     const passwordInput = button.previousElementSibling;
@@ -398,20 +528,45 @@ function handleFormSubmit(e) {
     }
 }
 
+// ============================================
+// FORM SUBMISSION HANDLERS
+// ============================================
+
 /**
  * Handle login form submission
+ * - Validate form fields
+ * - Show loading state
+ * - Simulate API call (2 seconds)
+ * - Display success/error feedback
+ * - Reset form after success
  */
 function handleLoginSubmit() {
+    // Clear previous messages
+    hideSuccessMessage();
+    
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
+    const submitBtn = document.querySelector('.btn-primary');
     
     // Validate login form
     const errors = validateLoginForm(email, password);
     
     if (Object.keys(errors).length === 0) {
-        // Validation passed
-        console.log('Login validation passed', { email, password });
-        showSuccessMessage('Login successful!');
+        // Show loading state
+        setButtonLoading(submitBtn, true);
+        
+        // Simulate API call (2 seconds)
+        setTimeout(() => {
+            setButtonLoading(submitBtn, false);
+            showSuccessMessage('Login successful! Welcome back.');
+            
+            // Reset form after success
+            setTimeout(() => {
+                document.getElementById('authForm').reset();
+                clearValidationErrors('login');
+                hideSuccessMessage();
+            }, 2000);
+        }, 2000);
     } else {
         // Display validation errors
         displayValidationErrors('login', errors);
@@ -420,19 +575,40 @@ function handleLoginSubmit() {
 
 /**
  * Handle sign up form submission
+ * - Validate all form fields
+ * - Show loading state during submission
+ * - Simulate API call (2 seconds)
+ * - Display success message
+ * - Reset form and clear errors
  */
 function handleSignUpSubmit() {
+    // Clear previous messages
+    hideSuccessMessage();
+    
     const email = document.getElementById('signupEmail').value.trim();
     const password = document.getElementById('signupPassword').value;
     const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    const submitBtn = document.querySelector('.btn-primary');
     
     // Validate signup form
     const errors = validateSignUpForm(email, password, confirmPassword);
     
     if (Object.keys(errors).length === 0) {
-        // Validation passed
-        console.log('Sign up validation passed', { email, password });
-        showSuccessMessage('Account created successfully!');
+        // Show loading state
+        setButtonLoading(submitBtn, true);
+        
+        // Simulate API call (2 seconds)
+        setTimeout(() => {
+            setButtonLoading(submitBtn, false);
+            showSuccessMessage('Account created successfully! Welcome to AppGate.');
+            
+            // Reset form after success
+            setTimeout(() => {
+                document.getElementById('authForm').reset();
+                clearValidationErrors('signup');
+                hideSuccessMessage();
+            }, 2000);
+        }, 2000);
     } else {
         // Display validation errors
         displayValidationErrors('signup', errors);
@@ -440,7 +616,10 @@ function handleSignUpSubmit() {
 }
 
 /**
- * Validate login form
+ * Validate login form fields
+ * @param {string} email - User's email address
+ * @param {string} password - User's password
+ * @returns {Object} Object containing validation errors (empty if valid)
  */
 function validateLoginForm(email, password) {
     const errors = {};
@@ -461,7 +640,11 @@ function validateLoginForm(email, password) {
 }
 
 /**
- * Validate sign up form
+ * Validate sign up form fields
+ * @param {string} email - User's email address
+ * @param {string} password - User's password
+ * @param {string} confirmPassword - Password confirmation
+ * @returns {Object} Object containing validation errors (empty if valid)
  */
 function validateSignUpForm(email, password, confirmPassword) {
     const errors = {};
@@ -490,8 +673,14 @@ function validateSignUpForm(email, password, confirmPassword) {
     return errors;
 }
 
+// ============================================
+// FORM VALIDATION & ERROR HANDLING
+// ============================================
+
 /**
- * Validate email format using regex
+ * Validate email format using regex pattern
+ * @param {string} email - Email address to validate
+ * @returns {boolean} True if email format is valid
  */
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

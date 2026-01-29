@@ -1,8 +1,40 @@
 /* ============================================
    AppGate Authentication System - Styles
+   
+   DESIGN SYSTEM:
+   - Professional deep blue color scheme
+   - Consistent spacing using CSS variables
+   - Touch-friendly input sizes (min 40px)
+   - Smooth animations and transitions
+   - Mobile-first responsive design
+   - Accessibility-focused implementation
+   
+   STRUCTURE:
+   1. CSS Variables (colors, spacing, shadows)
+   2. Global Styles (reset, typography)
+   3. Layout (container, cards, headers)
+   4. Form Elements (inputs, buttons, labels)
+   5. Feedback (errors, success, messages)
+   6. Animations (transitions, loading spinner)
+   7. Responsive Design (media queries)
    ============================================ */
 
-/* CSS Variables - Color Palette */
+/* ============================================
+   CSS VARIABLES - Design System
+   ============================================
+   
+   Color Palette:
+   - Primary: Deep Blue (#1E3A8A) - Primary action color
+   - Secondary: Slate Gray (#475569) - Secondary elements
+   - Background: Light Gray (#F8FAFC) - Page background
+   - Surface: White (#FFFFFF) - Card/form background
+   - Success: Emerald (#10B981) - Validation success
+   - Error: Red (#EF4444) - Validation errors
+   
+   Spacing: Consistent 0.25rem base unit increments
+   Border Radius: sm, md, lg variants for consistency
+   Shadows: sm, md, lg for depth hierarchy
+   */
 :root {
     --primary: #1E3A8A;
     --primary-dark: #1E40AF;
@@ -377,8 +409,34 @@ body {
 }
 
 .btn:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
+    background: var(--primary);
+}
+
+.btn.loading {
+    opacity: 0.8;
+    cursor: wait;
+    position: relative;
+    pointer-events: none;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: var(--spacing-lg);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Form Actions */
@@ -429,6 +487,47 @@ body {
 
 .error-message.show {
     display: block;
+}
+
+/* Success and Alert Messages */
+.message {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    animation: slideDown 0.4s ease-out;
+}
+
+.message-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.message-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+.message-success {
+    background: #ECFDF5;
+    color: #065F46;
+    border-left: 4px solid var(--success);
+}
+
+.message-success .message-icon {
+    background: var(--success);
+    color: white;
 }
 
 /* ============================================
