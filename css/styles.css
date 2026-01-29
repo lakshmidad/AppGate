@@ -157,6 +157,37 @@ body {
     }
 }
 
+@keyframes fadeInSlideLeft {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOutSlideRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+}
+
+/* Form transition class */
+.auth-form {
+    animation: fadeInSlideLeft 0.4s ease-out;
+}
+
+.auth-form.exit {
+    animation: fadeOutSlideRight 0.3s ease-in;
+}
+
 /* ============================================
    FORM ELEMENTS
    ============================================ */
@@ -203,16 +234,117 @@ body {
     color: var(--text-primary);
     transition: all 0.3s ease;
     outline: none;
+    min-height: 40px; /* Ensure touch-friendly size on mobile */
 }
 
 .form-input:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    background: #FFFFFF;
+}
+
+.form-input:hover:not(:focus) {
+    border-color: #CBD5E1;
 }
 
 .form-input::placeholder {
     color: var(--text-secondary);
     opacity: 0.7;
+}
+
+.form-input.error {
+    border-color: var(--error);
+}
+
+.form-input.error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Password Input Wrapper */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper .form-input {
+    padding-right: 40px;
+    flex: 1;
+}
+
+/* Password Toggle Button */
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: var(--primary);
+}
+
+.password-toggle:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+.password-toggle .eye-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.password-toggle .eye-icon.closed {
+    display: none;
+}
+
+/* Password Requirements */
+.password-requirements {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: #F3F4F6;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--border);
+}
+
+.requirement {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all 0.3s ease;
+}
+
+.requirement-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--border);
+    color: var(--text-secondary);
+    font-size: 0.625rem;
+    font-weight: bold;
+}
+
+.requirement.met {
+    color: var(--success);
+}
+
+.requirement.met .requirement-icon {
+    background: var(--success);
+    color: white;
 }
 
 /* Buttons */
@@ -303,19 +435,102 @@ body {
    RESPONSIVE DESIGN
    ============================================ */
 
-@media (max-width: 640px) {
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    :root {
+        --spacing-xl: 1.5rem;
+        --spacing-2xl: 2.5rem;
+    }
+    
     .auth-card {
         padding: var(--spacing-xl);
+        max-width: 100%;
+    }
+    
+    .app-title {
+        font-size: 1.75rem;
+    }
+    
+    .form-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* Small devices (640px and below) */
+@media (max-width: 640px) {
+    :root {
+        --spacing-lg: 1rem;
+        --spacing-xl: 1.5rem;
+    }
+    
+    .auth-container {
+        padding: var(--spacing-md);
+        justify-content: flex-start;
+        min-height: auto;
+        padding-top: var(--spacing-xl);
+    }
+    
+    .auth-header {
+        margin-bottom: var(--spacing-xl);
+    }
+    
+    .auth-card {
+        padding: var(--spacing-lg);
+        max-width: 100%;
+        box-shadow: var(--shadow-md);
     }
     
     .app-title {
         font-size: 1.5rem;
     }
+    
+    .form-title {
+        font-size: 1.125rem;
+    }
+    
+    .form-input {
+        padding: var(--spacing-md) var(--spacing-md);
+        font-size: 1rem; /* Prevent zoom on iOS */
+    }
+    
+    .btn {
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: 0.875rem;
+    }
+    
+    .form-footer {
+        margin-top: var(--spacing-md);
+        font-size: 0.8125rem;
+    }
 }
 
+/* Extra small devices (480px and below) */
 @media (max-width: 480px) {
+    :root {
+        --spacing-md: 0.875rem;
+        --spacing-lg: 1rem;
+    }
+    
     .auth-container {
         padding: var(--spacing-sm);
+        padding-top: var(--spacing-lg);
+    }
+    
+    .logo-placeholder svg {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .auth-header {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .app-title {
+        font-size: 1.25rem;
+    }
+    
+    .app-subtitle {
+        font-size: 0.8125rem;
     }
     
     .auth-card {
@@ -323,11 +538,75 @@ body {
         border-radius: var(--radius-md);
     }
     
+    .form-header {
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .form-title {
+        font-size: 1rem;
+    }
+    
+    .form-subtitle {
+        font-size: 0.8125rem;
+    }
+    
+    .form-group {
+        gap: var(--spacing-sm);
+    }
+    
+    .form-label {
+        font-size: 0.8125rem;
+    }
+    
+    .form-input {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 1rem;
+    }
+    
+    .btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: 0.8125rem;
+    }
+    
+    .forgot-password-link {
+        font-size: 0.7rem;
+    }
+    
+    .form-footer {
+        margin-top: var(--spacing-md);
+        font-size: 0.75rem;
+    }
+    
+    .auth-footer {
+        margin-top: var(--spacing-lg);
+        font-size: 0.65rem;
+    }
+}
+
+/* Landscape orientation optimization */
+@media (max-height: 600px) and (orientation: landscape) {
+    .auth-container {
+        min-height: auto;
+        padding: var(--spacing-md) 0;
+    }
+    
+    .auth-header {
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .auth-card {
+        padding: var(--spacing-md);
+    }
+    
+    .form-header {
+        margin-bottom: var(--spacing-md);
+    }
+    
     .app-title {
         font-size: 1.25rem;
     }
     
     .form-title {
-        font-size: 1.25rem;
+        font-size: 1rem;
     }
 }
