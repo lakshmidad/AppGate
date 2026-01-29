@@ -1,0 +1,24 @@
+# Netlify deployment configuration for AppGate
+
+# Build command (not needed for static site)
+# build command is not required
+
+# Directory to deploy
+[build]
+  publish = "."
+  command = ""
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Redirect rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
