@@ -194,6 +194,8 @@ function getSignUpFormHTML() {
                     At least 8 characters
                 </p>
             </div>
+            <div class="ai-suggestion" id="aiPasswordSuggestion" style="display:none;"></div>
+            <div class="security-tip" id="securityTip" style="display:none;"></div>
             <span class="error-message" id="signupPasswordError"></span>
         </div>
         
@@ -491,17 +493,49 @@ function togglePasswordVisibility(button) {
 }
 
 /**
- * Update password requirements display
+ * Update password requirements display with AI analysis
+ * - Analyzes password strength in real-time
+ * - Shows AI suggestions
+ * - Displays security tips
  */
 function updatePasswordRequirements() {
     const password = document.getElementById('signupPassword').value;
     const lengthRequirement = document.getElementById('lengthRequirement');
     
+    // Update basic length requirement
     if (lengthRequirement) {
         if (password.length >= 8) {
             lengthRequirement.classList.add('met');
         } else {
             lengthRequirement.classList.remove('met');
+        }
+    }
+    
+    // AI Password Strength Analysis
+    if (password.length > 0) {
+        const analysis = analyzePasswordStrengthAI(password);
+        
+        // Show AI strength indicator
+        const passwordInput = document.getElementById('signupPassword');
+        passwordInput.dataset.strength = analysis.strength.toLowerCase();
+        
+        // Show AI suggestions as tooltip or helper text
+        const suggestionEl = document.getElementById('aiPasswordSuggestion');
+        if (suggestionEl) {
+            if (analysis.suggestions.length > 0) {
+                // Show the first suggestion
+                suggestionEl.innerHTML = `💡 ${analysis.suggestions[0]}`;
+                suggestionEl.style.display = 'block';
+            } else {
+                suggestionEl.style.display = 'none';
+            }
+        }
+        
+        // Show security tip
+        const tipEl = document.getElementById('securityTip');
+        if (tipEl && Math.random() > 0.7) { // Show occasionally to avoid spam
+            tipEl.innerHTML = getSecurityTipAI('password');
+            tipEl.style.display = 'block';
         }
     }
 }
@@ -745,4 +779,230 @@ function clearValidationErrors(mode) {
             errorEl.classList.remove('show');
         }
     });
+}
+
+// ============================================
+// 🤖 AI FEATURES - INTELLIGENT ANALYSIS
+// ============================================
+
+/**
+ * AI Password Strength Analyzer
+ * - Analyzes password complexity
+ * - Provides intelligent suggestions
+ * - Returns strength score 0-100
+ * @param {string} password - Password to analyze
+ * @returns {Object} {score: number, strength: string, suggestions: Array}
+ */
+function analyzePasswordStrengthAI(password) {
+    let score = 0;
+    const suggestions = [];
+    
+    // Length analysis
+    if (password.length >= 8) score += 15;
+    if (password.length >= 12) score += 10;
+    if (password.length >= 16) score += 10;
+    if (password.length < 8) suggestions.push('Add more characters (8+ recommended)');
+    
+    // Uppercase letters
+    if (/[A-Z]/.test(password)) {
+        score += 15;
+    } else {
+        suggestions.push('Add uppercase letters');
+    }
+    
+    // Lowercase letters
+    if (/[a-z]/.test(password)) {
+        score += 15;
+    } else {
+        suggestions.push('Add lowercase letters');
+    }
+    
+    // Numbers
+    if (/\d/.test(password)) {
+        score += 15;
+    } else {
+        suggestions.push('Add numbers');
+    }
+    
+    // Special characters
+    if (/[!@#$%^&*()_+=\-\[\]{};:'",.<>?/\\|`~]/.test(password)) {
+        score += 15;
+    } else {
+        suggestions.push('Add special characters (!@#$%^&*)');
+    }
+    
+    // Common patterns to avoid
+    const commonPatterns = /^(123|abc|password|qwerty|admin|letmein)/i;
+    if (commonPatterns.test(password)) {
+        score = Math.max(0, score - 20);
+        suggestions.push('Avoid common patterns');
+    }
+    
+    // Repeated characters
+    if (/(.)\1{2,}/.test(password)) {
+        score = Math.max(0, score - 10);
+        suggestions.push('Avoid repeating characters');
+    }
+    
+    // Determine strength level
+    let strength = 'Weak';
+    if (score >= 80) strength = 'Very Strong';
+    else if (score >= 60) strength = 'Strong';
+    else if (score >= 40) strength = 'Good';
+    else if (score >= 20) strength = 'Fair';
+    
+    return {
+        score: Math.min(100, score),
+        strength: strength,
+        suggestions: suggestions
+    };
+}
+
+/**
+ * AI Security Tips Engine
+ * - Provides context-aware security recommendations
+ * - Shows relevant tips based on user action
+ * @param {string} context - Context ('login', 'signup', 'password')
+ * @returns {string} Security tip to display
+ */
+function getSecurityTipAI(context) {
+    const tips = {
+        login: [
+            '🔒 Use unique passwords for each website',
+            '🔐 Enable two-factor authentication if available',
+            '⚠️ Never share your password with anyone',
+            '🛡️ Check the URL to ensure you\'re on the real site',
+            '🔑 Use a password manager to store passwords safely'
+        ],
+        signup: [
+            '🎯 Use a strong, unique password',
+            '📧 Use a personal email address you control',
+            '🔐 Consider enabling two-factor authentication',
+            '📝 Write down recovery codes in a safe place',
+            '🚫 Never use personally identifiable information in passwords'
+        ],
+        password: [
+            '💡 Longer passwords are stronger passwords',
+            '🔀 Mix uppercase, lowercase, numbers, and symbols',
+            '❌ Avoid birthdays, names, or dictionary words',
+            '🔄 Change passwords if you suspect compromise',
+            '⭐ Make passwords unique across different sites'
+        ]
+    };
+    
+    const contextTips = tips[context] || tips.login;
+    return contextTips[Math.floor(Math.random() * contextTips.length)];
+}
+
+/**
+ * AI Email Validation Assistant
+ * - Checks email format
+ * - Detects common typos in popular domains
+ * - Suggests corrections
+ * @param {string} email - Email to validate
+ * @returns {Object} {isValid: boolean, suggestion: string|null}
+ */
+function validateEmailAI(email) {
+    const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!basicEmailRegex.test(email)) {
+        return { isValid: false, suggestion: 'Invalid email format' };
+    }
+    
+    // Common domain typos
+    const commonDomains = {
+        'gmial.com': 'gmail.com',
+        'gmai.com': 'gmail.com',
+        'yahooo.com': 'yahoo.com',
+        'yaho.com': 'yahoo.com',
+        'otulook.com': 'outlook.com',
+        'outlok.com': 'outlook.com'
+    };
+    
+    const domain = email.split('@')[1];
+    const suggestion = commonDomains[domain];
+    
+    if (suggestion) {
+        const correctedEmail = email.split('@')[0] + '@' + suggestion;
+        return { 
+            isValid: true, 
+            suggestion: `Did you mean ${correctedEmail}?` 
+        };
+    }
+    
+    return { isValid: true, suggestion: null };
+}
+
+/**
+ * AI Form Completeness Analyzer
+ * - Analyzes if form is likely to be submitted successfully
+ * - Provides real-time feedback
+ * @param {string} mode - Form mode ('login' or 'signup')
+ * @returns {Object} {isComplete: boolean, missing: Array, readiness: number}
+ */
+function analyzeFormCompletenessAI(mode) {
+    const emailInput = document.getElementById(`${mode}Email`);
+    const passwordInput = document.getElementById(`${mode}Password`);
+    const confirmPasswordInput = document.getElementById(`${mode}ConfirmPassword`);
+    
+    const missing = [];
+    let readiness = 0;
+    
+    // Check email
+    if (emailInput?.value?.trim()) {
+        readiness += 30;
+    } else {
+        missing.push('email');
+    }
+    
+    // Check password
+    if (passwordInput?.value?.trim()) {
+        readiness += 40;
+    } else {
+        missing.push('password');
+    }
+    
+    // Check confirm password for signup
+    if (mode === 'signup') {
+        if (confirmPasswordInput?.value?.trim()) {
+            readiness += 30;
+        } else {
+            missing.push('confirm password');
+        }
+    } else {
+        readiness += 30; // Login doesn't need confirm password
+    }
+    
+    return {
+        isComplete: missing.length === 0,
+        missing: missing,
+        readiness: readiness
+    };
+}
+
+/**
+ * AI Breach Detection Helper
+ * - Checks if email appears in common breaches (simplified)
+ * - Warns if email/password combination is risky
+ * @param {string} email - Email to check
+ * @returns {Object} {isAtRisk: boolean, recommendation: string}
+ */
+function checkBreachRiskAI(email) {
+    // Simplified breach detection - in production, use Have I Been Pwned API
+    const commonBreachedDomains = ['aol.com', 'yahoo.com', 'mail.ru']; // Example
+    
+    const domain = email.split('@')[1];
+    const isAtRisk = commonBreachedDomains.includes(domain.toLowerCase());
+    
+    if (isAtRisk) {
+        return {
+            isAtRisk: true,
+            recommendation: '⚠️ This domain has been in breaches. Use a strong, unique password.'
+        };
+    }
+    
+    return {
+        isAtRisk: false,
+        recommendation: null
+    };
 }
